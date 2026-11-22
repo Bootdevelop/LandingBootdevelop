@@ -1,0 +1,66 @@
+---
+// Cabecera limpia para páginas interiores: texto a la izquierda y, opcionalmente, una fotografía.
+import { Image } from 'astro:assets';
+import Icon, { type IconName } from './Icon.astro';
+
+interface Props {
+  title: string;
+  text: string;
+  crumbs?: { href: string; label: string }[];
+  photo?: ImageMetadata;
+  badge?: { icon: IconName; label: string };
+}
+const { title, text, crumbs = [], photo, badge } = Astro.props;
+---
+<section class="border-b border-border">
+  <div class:list={['container-x grid gap-12 py-14 sm:py-20', photo && 'lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16']}>
+    <div>
+      {crumbs.length > 0 && (
+        <nav aria-label="Breadcrumb" class="mb-8">
+          <ol class="t-small flex flex-wrap items-center gap-1.5">
+            {crumbs.map((c, i) => (
+              <li class="flex items-center gap-1.5">
+                {i > 0 && <span aria-hidden="true" class="text-neutral-300">/</span>}
+                <a href={c.href} class="transition-colors hover:text-foreground" aria-current={i === crumbs.length - 1 ? 'page' : undefined}>{c.label}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
+      <h1 class="t-h1 max-w-2xl">{title}</h1>
+      <p class="t-lead mt-5 max-w-xl">{text}</p>
+      <slot />
+    </div>
+
+    {photo && (
+      <div class="photo-in relative aspect-[4/3] overflow-hidden rounded-2xl bg-neutral-200">
+        <Image
+          src={photo}
+          alt=""
+          widths={[600, 900, 1200]}
+          sizes="(min-width: 1024px) 520px, 100vw"
+          loading="eager"
+          fetchpriority="high"
+          class="size-full object-cover"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-brand-900/45 via-transparent to-transparent"></div>
+        {badge && (
+          <div class="absolute bottom-5 left-5 flex items-center gap-3 rounded-xl bg-white/15 py-2.5 pr-4 pl-2.5 text-white ring-1 ring-white/20 ring-inset backdrop-blur-md">
+            <span class="grid size-8 place-items-center rounded-lg bg-white/15">
+              <Icon name={badge.icon} class="size-4" />
+            </span>
+            <span class="text-sm font-medium">{badge.label}</span>
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .photo-in { animation: photo-in 1s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .photo-in :global(img) { animation: photo-zoom 1.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  @keyframes photo-in { from { opacity: 0; transform: translateY(10px); } }
+  @keyframes photo-zoom { from { transform: scale(1.06); } }
+  @media (prefers-reduced-motion: reduce) { .photo-in, .photo-in :global(img) { animation: none; } }
+</style>

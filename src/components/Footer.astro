@@ -1,0 +1,59 @@
+---
+import Icon from './Icon.astro';
+import { languages, langs, serviceKeys, ui, email, type Lang } from '../i18n/ui';
+import { alternates, path, type Page } from '../i18n/routes';
+
+interface Props { lang: Lang; page: Page }
+const { lang, page } = Astro.props;
+const t = ui[lang];
+const alt = alternates(page);
+const year = new Date().getFullYear();
+---
+<footer class="border-t border-border bg-card">
+  <div class="container-x grid grid-cols-2 gap-x-6 gap-y-10 py-12 sm:py-16 md:grid-cols-[1.5fr_1fr_1fr_1fr] md:gap-12">
+    <div class="col-span-2 md:col-span-1">
+      <img src="/brand/logo.png" alt="Bootdevelop" width="422" height="76" class="h-6 w-auto" loading="lazy" />
+      <p class="mt-5 max-w-xs text-sm leading-relaxed">{t.footer.tagline}</p>
+    </div>
+
+    <nav aria-label={t.nav.services}>
+      <p class="text-sm font-medium text-foreground">{t.nav.services}</p>
+      <ul class="mt-4 space-y-2.5 text-sm">
+        {serviceKeys.map((k) => (
+          <li><a href={path(lang, { kind: 'service', key: k })} class="transition-colors hover:text-foreground">{t.services[k].title}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <nav aria-label={t.footer.company}>
+      <p class="text-sm font-medium text-foreground">{t.footer.company}</p>
+      <ul class="mt-4 space-y-2.5 text-sm">
+        <li><a href={path(lang, { kind: 'about' })} class="transition-colors hover:text-foreground">{t.nav.about}</a></li>
+        <li><a href={path(lang, { kind: 'contact' })} class="transition-colors hover:text-foreground">{t.nav.contact}</a></li>
+      </ul>
+    </nav>
+
+    <div class="col-span-2 md:col-span-1">
+      <p class="text-sm font-medium text-foreground">{t.nav.contact}</p>
+      <ul class="mt-4 space-y-2.5 text-sm">
+        <li><a href={`mailto:${email}`} class="inline-flex items-center gap-2 transition-colors hover:text-foreground"><Icon name="mail" class="size-4" />{email}</a></li>
+        <li class="inline-flex items-center gap-2"><Icon name="mapPin" class="size-4" />{t.contact.location}</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-border">
+    <div class="container-x flex flex-col-reverse gap-3 py-6 text-[13px] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+      <p>© {year} Bootdevelop. {t.footer.rights}</p>
+      <ul class="flex gap-4">
+        {langs.map((l) => (
+          <li>
+            <a href={alt[l]} hreflang={l} lang={l} data-set-lang={l} aria-current={l === lang ? 'true' : undefined} class="transition-colors hover:text-foreground aria-[current]:font-medium aria-[current]:text-foreground">
+              {languages[l]}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</footer>

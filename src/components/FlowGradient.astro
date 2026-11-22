@@ -1,0 +1,148 @@
+---
+// Degradado fluido animado con WebGL en los colores de marca.
+// Sin dependencias. Se pausa fuera de pantalla y respeta "reducir movimiento".
+interface Props { class?: string; speed?: number; seed?: number }
+// seed: cambia la composición inicial, para que cada página tenga su variante
+const { class: className = '', speed = 1, seed = 0 } = Astro.props;
+---
+<div class:list={['flow absolute inset-0 overflow-hidden', className]} aria-hidden="true">
+  <canvas data-flow data-speed={speed} data-seed={seed} class="absolute inset-0 size-full"></canvas>
+  <!-- Grano fino para evitar bandas y dar textura -->
+  <div class="grain absolute inset-0 opacity-[0.18] mix-blend-overlay"></div>
+</div>
+
+<script>
+  const VERT = `attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }`;
+  const FRAG = `
+    precision highp float;
+    uniform vec2 r;
+    uniform float t;
+
+    vec3 hash3(vec2 p){
+      vec3 q = vec3(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)), dot(p, vec2(419.2, 371.9)));
+      return fract(sin(q) * 43758.5453);
+    }
+    float noise(vec2 p){
+      vec2 i = floor(p), f = fract(p);
+      vec2 u = f * f * (3.0 - 2.0 * f);
+      float a = hash3(i).x, b = hash3(i + vec2(1.0, 0.0)).x;
+      float c = hash3(i + vec2(0.0, 1.0)).x, d = hash3(i + vec2(1.0, 1.0)).x;
+      return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
+    }
+    float fbm(vec2 p){
+      float v = 0.0, a = 0.5;
+      mat2 m = mat2(1.6, 1.2, -1.2, 1.6);
+      for (int i = 0; i < 3; i++){ v += a * noise(p); p = m * p; a *= 0.5; }
+      return v;
+    }
+
+    void main(){
+      vec2 uv = gl_FragCoord.xy / r;
+      vec2 p = (gl_FragCoord.xy - 0.5 * r) / min(r.x, r.y) * 1.0;
+      float s = t * 0.06;
+
+      // Deformación de dominio a baja frecuencia: grandes cintas de luz que fluyen
+      vec2 q = vec2(fbm(p + vec2(0.0, s)), fbm(p + vec2(5.2, 1.3) - s));
+      vec2 w = vec2(fbm(p + 1.8 * q + vec2(1.7, 9.2) + 0.5 * s), fbm(p + 1.8 * q + vec2(8.3, 2.8) - 0.3 * s));
+      float f = fbm(p + 1.6 * w);
+
+      vec3 c0 = vec3(0.016, 0.035, 0.110);  // azul noche
+      vec3 c1 = vec3(0.059, 0.165, 0.427);  // #0f2a6d
+      vec3 c2 = vec3(0.125, 0.322, 0.525);  // #205286
+      vec3 c3 = vec3(0.282, 0.569, 0.694);  // #4891b1
+      vec3 c4 = vec3(0.635, 0.808, 0.894);  // #a2cee4
+
+      vec3 col = mix(c0, c1, smoothstep(0.10, 0.40, f));
+      col = mix(col, c2, smoothstep(0.32, 0.55, f));
+      col = mix(col, c3, smoothstep(0.48, 0.68, f + 0.15 * w.y) * 0.9);
+      // Cresta brillante fina: da sensación de luz/seda
+      float ridge = 1.0 - abs(f - 0.6) * 7.0;
+      col = mix(col, c4, clamp(ridge, 0.0, 1.0) * 0.7 * smoothstep(0.25, 0.9, uv.x + 0.25 * uv.y));
+
+      // Más oscuro abajo a la izquierda, donde va el texto
+      float shade = smoothstep(-0.1, 0.95, uv.x * 0.75 + uv.y * 0.55);
+      col = mix(c0, col, 0.4 + 0.6 * shade);
+
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `;
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  document.querySelectorAll<HTMLCanvasElement>('canvas[data-flow]').forEach((canvas) => {
+    const gl = canvas.getContext('webgl', { antialias: false, premultipliedAlpha: false, powerPreference: 'low-power' });
+    if (!gl) { canvas.parentElement?.classList.add('flow-fallback'); return; }
+
+    const compile = (type: number, src: string) => {
+      const s = gl.createShader(type)!;
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      return s;
+    };
+    const prog = gl.createProgram()!;
+    gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT));
+    gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { canvas.parentElement?.classList.add('flow-fallback'); return; }
+    gl.useProgram(prog);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, 'p');
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+    const uR = gl.getUniformLocation(prog, 'r');
+    const uT = gl.getUniformLocation(prog, 't');
+    const speed = Number(canvas.dataset.speed || 1);
+    // Resolución reducida: el degradado es suave, así que no hace falta más y ahorra batería
+    const scale = 0.5;
+
+    const resize = () => {
+      const w = Math.max(1, Math.round(canvas.clientWidth * scale));
+      const h = Math.max(1, Math.round(canvas.clientHeight * scale));
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w; canvas.height = h;
+        gl.viewport(0, 0, w, h);
+      }
+      gl.uniform2f(uR, w, h);
+    };
+
+    const start = performance.now();
+    const offset = 30 + Number(canvas.dataset.seed || 0) * 17; // punto de partida con buena composición
+    let visible = true;
+    let raf = 0;
+
+    const draw = (now: number) => {
+      resize();
+      gl.uniform1f(uT, offset + ((now - start) / 1000) * speed);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    };
+    const loop = (now: number) => {
+      draw(now);
+      raf = visible && !reduce.matches ? requestAnimationFrame(loop) : 0;
+    };
+    const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
+
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) kick(); }).observe(canvas);
+    new ResizeObserver(() => draw(performance.now())).observe(canvas);
+    reduce.addEventListener('change', kick);
+    canvas.parentElement?.classList.add('flow-ready');
+    kick();
+  });
+</script>
+
+<style>
+  .flow {
+    background:
+      radial-gradient(60% 80% at 85% 20%, #4891b1 0%, transparent 60%),
+      radial-gradient(50% 60% at 70% 90%, #205286 0%, transparent 70%),
+      #06102b;
+  }
+  canvas { opacity: 0; transition: opacity 1.2s ease; }
+  .flow-ready canvas { opacity: 1; }
+  .flow-fallback canvas { display: none; }
+  .grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+</style>

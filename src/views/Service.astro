@@ -1,0 +1,47 @@
+---
+import PageHeader from '../components/PageHeader.astro';
+import CtaBanner from '../components/CtaBanner.astro';
+import { ui, serviceIcons, type Lang, type ServiceKey } from '../i18n/ui';
+import { path } from '../i18n/routes';
+import { servicePhotos } from '../assets/photos';
+
+interface Props { lang: Lang; serviceKey: ServiceKey }
+const { lang, serviceKey: key } = Astro.props;
+const t = ui[lang];
+const s = t.services[key];
+const ctaLabel = key === 'security' ? t.service.securityCta : t.service.cta;
+---
+<PageHeader
+  title={s.title}
+  text={s.intro}
+  photo={servicePhotos[key]}
+  badge={{ icon: serviceIcons[key], label: s.title }}
+  crumbs={[
+    { href: path(lang, { kind: 'home' }), label: t.nav.home },
+    { href: path(lang, { kind: 'service', key }), label: s.title },
+  ]}
+>
+  <a href={path(lang, { kind: 'contact' })} class="btn btn-primary btn-lg mt-8">{ctaLabel}</a>
+</PageHeader>
+
+<section class="section">
+  <div class="container-x grid gap-12 lg:grid-cols-[1.25fr_0.75fr] lg:gap-24">
+    <div class="space-y-6">
+      {s.body.map((p) => <p class="t-lead text-foreground">{p}</p>)}
+    </div>
+
+    <aside class="lg:pt-1.5">
+      <h2 class="t-h3">{t.service.areas}</h2>
+      <ul class="mt-4 space-y-3">
+        {s.areas.map((a) => (
+          <li class="t-body flex items-baseline gap-3 text-foreground">
+            <span class="size-1.5 shrink-0 translate-y-[-2px] rounded-full bg-brand-400" aria-hidden="true"></span>
+            {a}
+          </li>
+        ))}
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<CtaBanner lang={lang} button={ctaLabel} />

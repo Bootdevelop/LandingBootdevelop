@@ -1,0 +1,130 @@
+---
+import Icon from './Icon.astro';
+import { languages, langs, serviceKeys, serviceIcons, ui, type Lang } from '../i18n/ui';
+import { alternates, path, type Page } from '../i18n/routes';
+
+interface Props { lang: Lang; page: Page }
+const { lang, page } = Astro.props;
+const t = ui[lang];
+const alt = alternates(page);
+const isServices = page.kind === 'service';
+
+const linkCls = 'rounded-md px-3 py-2 text-sm transition-colors hover:text-foreground';
+---
+<header class="sticky top-0 z-50 border-b border-transparent bg-background/75 backdrop-blur-xl transition-colors data-[scrolled]:border-border" data-header>
+  <div class="container-x flex h-16 items-center justify-between gap-6">
+    <a href={path(lang, { kind: 'home' })} class="shrink-0" aria-label={`Bootdevelop, ${t.nav.home}`}>
+      <img src="/brand/logo.png" alt="Bootdevelop" width="422" height="76" class="h-[22px] w-auto sm:h-6" />
+    </a>
+
+    <nav class="hidden items-center gap-1 lg:flex" aria-label="Principal">
+      <div class="group relative">
+        <button
+          type="button"
+          class:list={[linkCls, 'inline-flex cursor-default items-center gap-1', isServices ? 'text-foreground' : 'text-muted-foreground']}
+          aria-haspopup="true"
+        >
+          {t.nav.services}
+          <Icon name="chevronDown" class="size-3.5 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
+        </button>
+        <!-- Menú desplegable de servicios -->
+        <div class="invisible absolute top-full left-1/2 w-[640px] -translate-x-1/2 pt-3 opacity-0 transition-all duration-200 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+          <div class="panel grid grid-cols-2 gap-1 p-2">
+            {serviceKeys.map((k) => (
+              <a href={path(lang, { kind: 'service', key: k })} class="flex gap-3.5 rounded-lg p-3 transition-colors hover:bg-neutral-100">
+                <span class="grid size-9 shrink-0 place-items-center rounded-md bg-brand-50 text-brand-700 ring-1 ring-brand-100 ring-inset">
+                  <Icon name={serviceIcons[k]} class="size-[18px]" />
+                </span>
+                <span>
+                  <span class="block text-sm font-medium text-foreground">{t.services[k].title}</span>
+                  <span class="mt-0.5 block text-[13px] leading-snug text-muted-foreground">{t.services[k].short}</span>
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+      <a href={path(lang, { kind: 'about' })} class:list={[linkCls, page.kind === 'about' ? 'text-foreground' : 'text-muted-foreground']}>{t.nav.about}</a>
+      <a href={path(lang, { kind: 'contact' })} class:list={[linkCls, page.kind === 'contact' ? 'text-foreground' : 'text-muted-foreground']}>{t.nav.contact}</a>
+    </nav>
+
+    <div class="flex items-center gap-1.5">
+      <details class="group/lang relative" data-lang-menu>
+        <summary class="flex h-10 cursor-pointer list-none items-center gap-1.5 rounded-md px-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground [&::-webkit-details-marker]:hidden">
+          <Icon name="globe" class="size-4" />
+          <span class="uppercase">{lang}</span>
+          <span class="sr-only">{t.nav.language}</span>
+        </summary>
+        <ul class="panel absolute right-0 mt-2 w-40 p-1 text-sm">
+          {langs.map((l) => (
+            <li>
+              <a
+                href={alt[l]}
+                hreflang={l}
+                lang={l}
+                data-set-lang={l}
+                aria-current={l === lang ? 'true' : undefined}
+                class="flex items-center justify-between rounded-md px-3 py-2 text-foreground hover:bg-neutral-100"
+              >
+                {languages[l]}
+                {l === lang && <Icon name="check" class="size-4 text-brand-600" />}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </details>
+
+      <a href={path(lang, { kind: 'contact' })} class="btn btn-primary hidden sm:inline-flex">{t.nav.cta}</a>
+
+      <button class="flex size-10 items-center justify-center rounded-md text-foreground lg:hidden" aria-expanded="false" aria-controls="mobile-nav" data-menu-btn>
+        <span class="sr-only">{t.nav.menu}</span>
+        <span data-icon-open><Icon name="menu" /></span>
+        <span data-icon-close hidden><Icon name="x" /></span>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-nav" class="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-border bg-background lg:hidden" hidden data-mobile-nav>
+    <nav class="container-x flex flex-col py-4" aria-label="Principal">
+      <p class="py-3 text-lg font-medium text-foreground">{t.nav.services}</p>
+      <ul class="mb-3 grid gap-1 border-l border-border pl-4">
+        {serviceKeys.map((k) => (
+          <li><a href={path(lang, { kind: 'service', key: k })} class="block py-1.5 text-[15px] text-body">{t.services[k].title}</a></li>
+        ))}
+      </ul>
+      <a href={path(lang, { kind: 'about' })} class="border-t border-border py-3 text-lg font-medium text-foreground">{t.nav.about}</a>
+      <a href={path(lang, { kind: 'contact' })} class="border-t border-border py-3 text-lg font-medium text-foreground">{t.nav.contact}</a>
+      <a href={path(lang, { kind: 'contact' })} class="btn btn-primary btn-lg mt-4">{t.nav.cta}</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]')!;
+  const btn = document.querySelector<HTMLButtonElement>('[data-menu-btn]')!;
+  const panel = document.querySelector<HTMLElement>('[data-mobile-nav]')!;
+  const langMenu = document.querySelector<HTMLDetailsElement>('[data-lang-menu]')!;
+
+  const setOpen = (open: boolean) => {
+    btn.setAttribute('aria-expanded', String(open));
+    panel.hidden = !open;
+    btn.querySelector<HTMLElement>('[data-icon-open]')!.hidden = open;
+    btn.querySelector<HTMLElement>('[data-icon-close]')!.hidden = !open;
+  };
+  btn.addEventListener('click', () => setOpen(panel.hidden));
+
+  // El idioma elegido manualmente tiene prioridad sobre el del navegador
+  document.querySelectorAll<HTMLAnchorElement>('[data-set-lang]').forEach((a) =>
+    a.addEventListener('click', () => { try { localStorage.setItem('lang', a.dataset.setLang!); } catch {} }),
+  );
+  document.addEventListener('click', (e) => {
+    if (langMenu.open && !langMenu.contains(e.target as Node)) langMenu.open = false;
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { setOpen(false); langMenu.open = false; }
+  });
+
+  const onScroll = () => header.toggleAttribute('data-scrolled', window.scrollY > 4);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>

@@ -1,0 +1,219 @@
+---
+// Ilustraciones SVG para las tarjetas de "Por qué Bootdevelop" y "Nuestros principios".
+// Colores de marca y animaciones suaves; las de entrada se activan con [data-reveal].
+export type VisualKind = 'experience' | 'communication' | 'quality' | 'scale' | 'transparency' | 'testing' | 'outcome';
+interface Props { kind: VisualKind }
+const { kind } = Astro.props;
+
+// Rejilla tipo "actividad": intensidad pseudoaleatoria pero estable, más intensa hacia la derecha
+const levels = ['#e8f2f8', '#dcecf5', '#a2cee4', '#6faec9', '#4891b1', '#205286'];
+const cells = Array.from({ length: 12 * 6 }, (_, n) => {
+  const col = n % 12;
+  const row = Math.floor(n / 12);
+  const r = Math.abs((Math.sin(n * 12.9898) * 43758.5453) % 1);
+  const lvl = Math.min(5, Math.floor(r * 3 + col / 3.2));
+  return { x: 24 + col * 16, y: 34 + row * 16, fill: levels[lvl], d: col * 0.06 + row * 0.03 };
+});
+
+const codeLines = [96, 132, 76, 118, 104];
+---
+<svg viewBox="0 0 240 160" class="size-full" aria-hidden="true">
+  {kind === 'experience' && (
+    <g>
+      {cells.map((c) => (
+        <rect x={c.x} y={c.y} width="12" height="12" rx="3" fill={c.fill} class="pop" style={`--d:${c.d}s`} />
+      ))}
+    </g>
+  )}
+
+  {kind === 'communication' && (
+    <g>
+      <circle cx="30" cy="47" r="9" fill="#a2cee4" />
+      <rect x="46" y="30" width="128" height="34" rx="12" fill="#fff" stroke="#dcecf5" />
+      <rect x="58" y="41" width="78" height="5" rx="2.5" fill="#cfd8e3" />
+      <rect x="58" y="51" width="52" height="5" rx="2.5" fill="#e3e8ef" />
+      <circle cx="210" cy="93" r="9" fill="#205286" />
+      <rect x="66" y="76" width="128" height="34" rx="12" fill="#173c78" />
+      <rect x="78" y="87" width="88" height="5" rx="2.5" fill="#fff" opacity="0.85" />
+      <rect x="78" y="97" width="60" height="5" rx="2.5" fill="#fff" opacity="0.5" />
+      <circle cx="30" cy="135" r="9" fill="#a2cee4" />
+      <rect x="46" y="121" width="54" height="28" rx="12" fill="#fff" stroke="#dcecf5" />
+      <circle cx="62" cy="135" r="3" fill="#4891b1" class="typing" style="--d:0s" />
+      <circle cx="73" cy="135" r="3" fill="#4891b1" class="typing" style="--d:.15s" />
+      <circle cx="84" cy="135" r="3" fill="#4891b1" class="typing" style="--d:.3s" />
+    </g>
+  )}
+
+  {kind === 'quality' && (
+    <g>
+      <circle cx="120" cy="80" r="66" fill="none" stroke="#dcecf5" class="ring" style="--d:0s" />
+      <circle cx="120" cy="80" r="48" fill="none" stroke="#a2cee4" class="ring" style="--d:.6s" />
+      <circle cx="120" cy="80" r="66" fill="none" stroke="#e8f2f8" />
+      <circle cx="120" cy="80" r="48" fill="none" stroke="#dcecf5" />
+      <path d="M120 42 L150 53 V78 C150 99 137 112 120 118 C103 112 90 99 90 78 V53 Z" fill="#0f2a6d" />
+      <path d="M120 42 L150 53 V78 C150 99 137 112 120 118 Z" fill="#173c78" />
+      <path d="M107 80 L117 90 L134 71" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+      {[[52, 46], [190, 58], [60, 120], [184, 118]].map(([x, y], i) => (
+        <g class="pop" style={`--d:${0.3 + i * 0.25}s`}>
+          <circle cx={x} cy={y} r="11" fill="#fff" stroke="#dcecf5" />
+          <path d={`M${x - 4} ${y} l3 3 l5 -6`} fill="none" stroke="#4891b1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+      ))}
+    </g>
+  )}
+
+  {kind === 'scale' && (
+    <g>
+      <line x1="24" y1="100" x2="216" y2="100" stroke="#dcecf5" />
+      <line x1="24" y1="68" x2="216" y2="68" stroke="#eef3f8" />
+      <line x1="24" y1="36" x2="216" y2="36" stroke="#eef3f8" />
+      <path d="M24 96 C70 93 104 84 132 68 S190 36 216 26 V100 H24 Z" fill="#e8f2f8" class="grow-area" />
+      <path d="M24 96 C70 93 104 84 132 68 S190 36 216 26" fill="none" stroke="#205286" stroke-width="3" stroke-linecap="round" pathLength="1" class="grow" />
+      <g>
+        <rect x="30" y="112" width="28" height="30" rx="6" fill="#a2cee4" />
+        <rect x="36" y="119" width="16" height="3" rx="1.5" fill="#fff" opacity="0.7" />
+        <rect x="36" y="126" width="16" height="3" rx="1.5" fill="#fff" opacity="0.45" />
+        <circle cx="52" cy="136" r="1.8" fill="#fff" />
+      </g>
+      <g class="srv" style="--d:0.55s">
+        <rect x="68" y="112" width="28" height="30" rx="6" fill="#6faec9" />
+        <rect x="74" y="119" width="16" height="3" rx="1.5" fill="#fff" opacity="0.7" />
+        <rect x="74" y="126" width="16" height="3" rx="1.5" fill="#fff" opacity="0.45" />
+        <circle cx="90" cy="136" r="1.8" fill="#fff" />
+      </g>
+      <g class="srv" style="--d:1.10s">
+        <rect x="106" y="112" width="28" height="30" rx="6" fill="#4891b1" />
+        <rect x="112" y="119" width="16" height="3" rx="1.5" fill="#fff" opacity="0.7" />
+        <rect x="112" y="126" width="16" height="3" rx="1.5" fill="#fff" opacity="0.45" />
+        <circle cx="128" cy="136" r="1.8" fill="#fff" />
+      </g>
+      <g class="srv" style="--d:1.65s">
+        <rect x="144" y="112" width="28" height="30" rx="6" fill="#205286" />
+        <rect x="150" y="119" width="16" height="3" rx="1.5" fill="#fff" opacity="0.7" />
+        <rect x="150" y="126" width="16" height="3" rx="1.5" fill="#fff" opacity="0.45" />
+        <circle cx="166" cy="136" r="1.8" fill="#fff" />
+      </g>
+      <g class="srv" style="--d:2.20s">
+        <rect x="182" y="112" width="28" height="30" rx="6" fill="#0f2a6d" />
+        <rect x="188" y="119" width="16" height="3" rx="1.5" fill="#fff" opacity="0.7" />
+        <rect x="188" y="126" width="16" height="3" rx="1.5" fill="#fff" opacity="0.45" />
+        <circle cx="204" cy="136" r="1.8" fill="#fff" />
+      </g>
+    </g>
+  )}
+
+  {kind === 'transparency' && (
+    <g>
+      {[24, 92, 160].map((x) => (
+        <g>
+          <rect x={x} y="24" width="56" height="112" rx="9" fill="#fff" stroke="#dcecf5" />
+          <rect x={x + 8} y="33" width="22" height="5" rx="2.5" fill="#a2cee4" />
+        </g>
+      ))}
+      <rect x="32" y="48" width="40" height="22" rx="5" fill="#e8f2f8" />
+      <rect x="32" y="76" width="40" height="22" rx="5" fill="#e8f2f8" />
+      <rect x="100" y="76" width="40" height="22" rx="5" fill="#e8f2f8" />
+      <rect x="168" y="48" width="40" height="22" rx="5" fill="#dcecf5" />
+      <rect x="168" y="76" width="40" height="22" rx="5" fill="#dcecf5" />
+      <g class="mover">
+        <rect x="32" y="104" width="40" height="22" rx="5" fill="#0f2a6d" />
+        <rect x="38" y="111" width="22" height="4" rx="2" fill="#fff" opacity="0.85" />
+        <rect x="38" y="118" width="14" height="3" rx="1.5" fill="#fff" opacity="0.5" />
+      </g>
+    </g>
+  )}
+
+  {kind === 'testing' && (
+    <g>
+      <rect x="24" y="22" width="192" height="116" rx="10" fill="#fff" stroke="#dcecf5" />
+      <circle cx="36" cy="33" r="2.5" fill="#dcecf5" /><circle cx="44" cy="33" r="2.5" fill="#dcecf5" /><circle cx="52" cy="33" r="2.5" fill="#dcecf5" />
+      {codeLines.map((w, i) => (
+        <g>
+          <rect x="38" y={48 + i * 14} width="8" height="5" rx="2.5" fill="#a2cee4" />
+          <rect x="52" y={48 + i * 14} width={w} height="5" rx="2.5" fill={i % 2 ? '#e3e8ef' : '#cfd8e3'} />
+          <g class="pop" style={`--d:${0.2 + i * 0.25}s`}>
+            <circle cx="198" cy={50.5 + i * 14} r="5" fill="#205286" />
+            <path d={`M195.5 ${50.5 + i * 14} l1.8 1.8 l3.2 -3.6`} fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </g>
+        </g>
+      ))}
+      <rect x="38" y="122" width="164" height="5" rx="2.5" fill="#e8f2f8" />
+      <rect x="38" y="122" width="164" height="5" rx="2.5" fill="#4891b1" class="bar" />
+    </g>
+  )}
+
+  {kind === 'outcome' && (
+    <g>
+      <line x1="28" y1="130" x2="212" y2="130" stroke="#dcecf5" />
+      <line x1="28" y1="100" x2="212" y2="100" stroke="#eef3f8" />
+      <line x1="28" y1="70" x2="212" y2="70" stroke="#eef3f8" />
+      <path d="M30 124 L70 112 L104 116 L138 90 L170 78 L196 50 L196 130 L30 130 Z" fill="#e8f2f8" class="fade" />
+      <path d="M30 124 L70 112 L104 116 L138 90 L170 78 L196 50" fill="none" stroke="#205286" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" pathLength="1" class="draw" />
+      {[[70, 112], [104, 116], [138, 90], [170, 78]].map(([x, y]) => <circle cx={x} cy={y} r="3.5" fill="#fff" stroke="#4891b1" stroke-width="2" />)}
+      <g class="pop" style="--d:1.3s">
+        <line x1="196" y1="50" x2="196" y2="22" stroke="#0f2a6d" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M197 22 L218 29 L197 36 Z" fill="#0f2a6d" />
+        <circle cx="196" cy="50" r="5" fill="#0f2a6d" />
+      </g>
+    </g>
+  )}
+</svg>
+
+<script>
+  // Activa las animaciones de entrada cuando el contenedor [data-reveal] es visible
+  document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => {
+    new IntersectionObserver(([e], obs) => {
+      if (e.isIntersecting) { el.classList.add('is-visible'); obs.disconnect(); }
+    }, { threshold: 0.3 }).observe(el);
+  });
+</script>
+
+<style>
+  /* Aparición escalonada */
+  .pop { opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(0.6); transition: opacity 0.45s, transform 0.45s cubic-bezier(0.3, 1.5, 0.6, 1); transition-delay: var(--d); }
+  :global(.is-visible) .pop { opacity: 1; transform: none; }
+
+  /* Indicador de "escribiendo" */
+  .typing { animation: typing 1.2s ease-in-out infinite; animation-delay: var(--d); }
+  @keyframes typing { 0%, 60%, 100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-3px); opacity: 1; } }
+
+  /* Pulso del escudo */
+  .ring { transform-box: fill-box; transform-origin: center; animation: pulse 3s ease-out infinite; animation-delay: var(--d); opacity: 0; }
+  @keyframes pulse { 0% { transform: scale(0.85); opacity: 0.9; } 100% { transform: scale(1.12); opacity: 0; } }
+
+  /* Escalabilidad: la curva crece y se añaden servidores */
+  .grow { stroke-dasharray: 1; stroke-dashoffset: 1; animation: grow 6s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+  @keyframes grow { 0% { stroke-dashoffset: 1; opacity: 1; } 45%, 85% { stroke-dashoffset: 0; opacity: 1; } 95%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+  .grow-area { animation: grow-area 6s ease-in-out infinite; }
+  @keyframes grow-area { 0%, 15% { opacity: 0; } 45%, 85% { opacity: 1; } 95%, 100% { opacity: 0; } }
+  .srv { transform-box: fill-box; transform-origin: center bottom; animation: srv 6s cubic-bezier(0.3, 1.4, 0.6, 1) infinite; animation-delay: var(--d); opacity: 0; }
+  @keyframes srv { 0% { opacity: 0; transform: translateY(6px) scale(0.85); } 8%, 70% { opacity: 1; transform: none; } 80%, 100% { opacity: 0; transform: none; } }
+
+  /* Transparencia: una tarea avanza por las columnas */
+  .mover { animation: move 6s cubic-bezier(0.6, 0, 0.3, 1) infinite; }
+  @keyframes move {
+    0%, 20% { transform: translate(0, 0); }
+    33%, 53% { transform: translate(68px, -28px); }
+    66%, 90% { transform: translate(136px, 0); }
+    100% { transform: translate(0, 0); opacity: 0; }
+  }
+
+  /* Calidad: barra de pruebas que se completa */
+  .bar { transform-box: fill-box; transform-origin: left; transform: scaleX(0); transition: transform 1.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s; }
+  :global(.is-visible) .bar { transform: none; }
+
+  /* Compromiso: la línea sube hasta el objetivo */
+  .draw { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  :global(.is-visible) .draw { stroke-dashoffset: 0; }
+  .fade { opacity: 0; transition: opacity 1s 0.6s; }
+  :global(.is-visible) .fade { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pop, .fade, .bar { opacity: 1; transform: none; transition: none; }
+    .draw { stroke-dashoffset: 0; transition: none; }
+    .typing, .ring, .grow, .grow-area, .srv, .mover { animation: none; }
+    .grow { stroke-dashoffset: 0; }
+    .srv { opacity: 1; }
+    .ring { opacity: 0; }
+  }
+</style>

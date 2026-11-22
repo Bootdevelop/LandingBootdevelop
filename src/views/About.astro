@@ -1,0 +1,74 @@
+---
+import PageHeader from '../components/PageHeader.astro';
+import CtaBanner from '../components/CtaBanner.astro';
+import VisualCard from '../components/VisualCard.astro';
+import { ui, type Lang } from '../i18n/ui';
+import { path } from '../i18n/routes';
+import { pagePhotos } from '../assets/photos';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = ui[lang];
+const a = t.about;
+const valueKinds = ['transparency', 'testing', 'outcome'] as const;
+---
+<PageHeader
+  title={a.title}
+  text={a.text}
+  photo={pagePhotos.services}
+  crumbs={[{ href: path(lang, { kind: 'home' }), label: t.nav.home }, { href: path(lang, { kind: 'about' }), label: t.nav.about }]}
+/>
+
+<section class="section">
+  <div class="container-x grid gap-14 lg:grid-cols-[1.15fr_0.85fr] lg:gap-24">
+    <div class="space-y-5">
+      {a.body.map((p) => <p class="t-lead text-foreground">{p}</p>)}
+    </div>
+
+    <div>
+      <h2 class="t-h3">{t.home.approachTitle}</h2>
+      <p class="t-small mt-1">{t.home.approachText}</p>
+      <ol class="process relative mt-8" data-process>
+        <span class="absolute top-3 bottom-3 left-[11px] w-px bg-border" aria-hidden="true">
+          <span class="fill absolute inset-0 origin-top bg-brand-500"></span>
+        </span>
+        {t.steps.map((s, i) => (
+          <li class="relative pb-7 pl-11 last:pb-0" style={`--i:${i}`}>
+            <span class="dot absolute top-0 left-0 grid size-6 place-items-center rounded-full bg-background ring-1 ring-border transition-shadow duration-500">
+              <span class="size-2 rounded-full bg-neutral-300 transition-colors duration-500"></span>
+            </span>
+            <h3 class="t-h3 leading-6">{s.title}</h3>
+            <p class="t-body mt-1">{s.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="section border-t border-border">
+  <div class="container-x">
+    <h2 class="t-h2">{a.valuesTitle}</h2>
+    <ul class="mt-12 grid gap-4 md:grid-cols-3" data-reveal>
+      {a.values.map((v, i) => <VisualCard kind={valueKinds[i]} title={v.title} text={v.text} />)}
+    </ul>
+  </div>
+</section>
+
+<CtaBanner lang={lang} />
+
+<style>
+  .fill { transform: scaleY(0); transition: transform 1.6s cubic-bezier(0.4, 0, 0.2, 1); }
+  .is-visible .fill { transform: none; }
+  .is-visible .dot { --tw-ring-color: var(--color-brand-300); transition-delay: calc(var(--i) * 0.35s); }
+  .is-visible .dot > span { background: var(--color-brand-600); transition-delay: calc(var(--i) * 0.35s); }
+  @media (prefers-reduced-motion: reduce) { .fill, .dot, .dot > span { transition: none; } }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-process]').forEach((el) => {
+    new IntersectionObserver(([e], obs) => {
+      if (e.isIntersecting) { el.classList.add('is-visible'); obs.disconnect(); }
+    }, { threshold: 0.4 }).observe(el);
+  });
+</script>

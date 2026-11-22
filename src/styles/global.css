@@ -1,0 +1,92 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+
+/*
+  Sistema visual: monocromo disciplinado (líneas de 1px, sin sombras decorativas)
+  con el azul de Bootdevelop como único acento.
+  Nombres de tokens compatibles con shadcn/ui, así que los componentes de 21st.dev funcionan sin cambios.
+*/
+@theme {
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+
+  --color-brand-50: #f0f6fb;
+  --color-brand-100: #dcecf5;
+  --color-brand-200: #a2cee4;
+  --color-brand-300: #6faec9;
+  --color-brand-400: #4891b1;
+  --color-brand-500: #356d98;
+  --color-brand-600: #205286;
+  --color-brand-700: #173c78;
+  --color-brand-800: #0f2a6d;
+  --color-brand-900: #0a1d4d;
+
+  --color-background: #fafafa;
+  --color-card: #ffffff;
+  --color-foreground: #171717;
+  --color-body: #4d4d4d;
+  --color-muted-foreground: #737373;
+  --color-border: #ebebeb;
+  --color-primary: #0f2a6d;
+  --color-primary-foreground: #ffffff;
+  --color-ring: #4891b1;
+  --color-success: #1a7f4b;
+
+  --color-night: #060a14;
+  --color-night-card: #0c1220;
+  --color-night-border: #1c2536;
+  --color-night-text: #a3adbf;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-body font-sans antialiased;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  h1, h2, h3 { @apply text-foreground; text-wrap: balance; }
+  p { text-wrap: pretty; }
+  :focus-visible { @apply outline-2 outline-offset-2 outline-ring rounded-sm; }
+  ::selection { background: var(--color-brand-200); color: var(--color-brand-900); }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-delay: 0ms !important; }
+  }
+}
+
+@layer components {
+  .container-x { @apply mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-8; }
+
+  .btn {
+    @apply inline-flex h-10 items-center justify-center gap-2 rounded-md px-4 text-sm font-medium whitespace-nowrap transition-colors;
+  }
+  .btn-lg { @apply h-12 px-6 text-[15px]; }
+  .btn-primary { @apply bg-primary text-primary-foreground hover:bg-brand-700; }
+  .btn-ghost { @apply bg-card text-foreground shadow-[0_0_0_1px_var(--color-border)] hover:bg-neutral-100; }
+  .btn-light { @apply bg-white text-brand-900 hover:bg-brand-50; }
+  .btn-glass { @apply bg-white/10 text-white ring-1 ring-white/20 ring-inset backdrop-blur-md hover:bg-white/15; }
+
+  /* Tarjeta tipo "panel": anillo de 1px en lugar de sombra */
+  .panel {
+    @apply rounded-xl bg-card;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.04), 0 24px 48px -24px rgb(15 42 109 / 0.18);
+  }
+
+  /* Escala tipográfica única para todo el sitio */
+  .t-display { @apply text-[40px] leading-[1.02] font-medium tracking-[-0.045em] sm:text-[56px] lg:text-[64px]; }
+  .t-h1 { @apply text-[34px] leading-[1.08] font-medium tracking-[-0.04em] sm:text-[44px] lg:text-[48px]; }
+  .t-h2 { @apply text-[26px] leading-[1.15] font-medium tracking-[-0.03em] sm:text-[32px]; }
+  .t-h3 { @apply text-[17px] leading-snug font-medium tracking-[-0.015em] text-foreground; }
+  .t-lead { @apply text-[17px] leading-relaxed sm:text-lg sm:leading-relaxed; }
+  .t-body { @apply text-[15px] leading-relaxed; }
+  .t-small { @apply text-sm text-muted-foreground; }
+  .section { @apply py-20 sm:py-24; }
+}
+

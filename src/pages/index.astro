@@ -1,0 +1,35 @@
+---
+// Raíz: detecta el idioma y redirige a /es/, /en/ o /fr/.
+// Prioridad: idioma elegido antes por el usuario > idiomas del navegador > inglés.
+import { languages } from '../i18n/ui';
+const codes = Object.keys(languages);
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bootdevelop</title>
+    <link rel="icon" href="/favicon.ico" />
+    {codes.map((l) => <link rel="alternate" hreflang={l} href={`https://bootdevelop.com/${l}/`} />)}
+    <script is:inline define:vars={{ codes }}>
+      (function () {
+        var pick = null;
+        try { pick = localStorage.getItem('lang'); } catch (e) {}
+        if (codes.indexOf(pick) === -1) {
+          pick = null;
+          var prefs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+          for (var i = 0; i < prefs.length && !pick; i++) {
+            var base = String(prefs[i]).toLowerCase().split('-')[0];
+            if (codes.indexOf(base) !== -1) pick = base;
+          }
+        }
+        location.replace('/' + (pick || 'en') + '/' + location.hash);
+      })();
+    </script>
+    <noscript><meta http-equiv="refresh" content="0; url=/es/" /></noscript>
+  </head>
+  <body style="font-family: system-ui, sans-serif; padding: 2rem;">
+    <p><a href="/es/">Español</a> · <a href="/en/">English</a> · <a href="/fr/">Français</a></p>
+  </body>
+</html>

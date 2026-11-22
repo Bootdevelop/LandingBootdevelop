@@ -1,0 +1,89 @@
+---
+// Contacto sin formulario: el correo es la acción principal.
+import PageHeader from '../components/PageHeader.astro';
+import FlowGradient from '../components/FlowGradient.astro';
+import Icon from '../components/Icon.astro';
+import { ui, email, type Lang } from '../i18n/ui';
+import { path } from '../i18n/routes';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = ui[lang];
+const c = t.contact;
+---
+<PageHeader
+  title={c.title}
+  text={c.text}
+  crumbs={[{ href: path(lang, { kind: 'home' }), label: t.nav.home }, { href: path(lang, { kind: 'contact' }), label: t.nav.contact }]}
+/>
+
+<section class="section">
+  <div class="container-x grid gap-12 lg:grid-cols-[1.3fr_0.7fr] lg:gap-16">
+    <div>
+      <!-- Tarjeta principal con el correo -->
+      <div class="relative isolate overflow-hidden rounded-2xl px-7 py-10 sm:px-10 sm:py-12">
+        <FlowGradient speed={0.7} seed={4} />
+        <div class="relative">
+          <p class="t-small !text-white/60">{c.emailLabel}</p>
+          <a href={`mailto:${email}`} class="mt-2 block text-[clamp(16px,5.4vw,21px)] leading-tight font-medium tracking-[-0.02em] text-white underline-offset-8 hover:underline sm:text-[32px] sm:tracking-[-0.03em]">{email}</a>
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+            <a href={`mailto:${email}`} class="btn btn-light btn-lg">
+              <Icon name="mail" class="size-4" />
+              {c.write}
+            </a>
+            <button type="button" class="btn btn-glass btn-lg" data-copy={email} data-copied={c.copied}>
+              <span data-label>{c.copy}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Qué incluir en el correo -->
+      <div class="mt-10">
+        <h2 class="t-h3">{c.tipsTitle}</h2>
+        <ul class="mt-4 space-y-3">
+          {c.tips.map((tip) => (
+            <li class="t-body flex items-baseline gap-3 text-foreground">
+              <span class="size-1.5 shrink-0 translate-y-[-2px] rounded-full bg-brand-400" aria-hidden="true"></span>
+              {tip}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <dl class="grid content-start divide-y divide-border border-y border-border">
+      <div class="flex gap-4 py-6">
+        <Icon name="mapPin" class="mt-0.5 size-5 shrink-0 text-brand-600" />
+        <div>
+          <dt class="t-small">{c.locationLabel}</dt>
+          <dd class="t-body mt-0.5 text-foreground">{c.location}</dd>
+        </div>
+      </div>
+      <div class="flex gap-4 py-6">
+        <Icon name="clock" class="mt-0.5 size-5 shrink-0 text-brand-600" />
+        <div>
+          <dt class="t-small">{c.responseLabel}</dt>
+          <dd class="t-body mt-0.5 text-foreground">{c.response}</dd>
+        </div>
+      </div>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+    const label = btn.querySelector<HTMLElement>('[data-label]')!;
+    const original = label.textContent;
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copy!);
+        label.textContent = btn.dataset.copied!;
+        setTimeout(() => { label.textContent = original; }, 2000);
+      } catch {
+        window.location.href = `mailto:${btn.dataset.copy}`;
+      }
+    });
+  });
+</script>

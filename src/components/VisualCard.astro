@@ -1,0 +1,20 @@
+---
+// Tarjeta con ilustración animada arriba y texto debajo.
+// Se usa dentro de una lista con [data-reveal] para activar las animaciones de entrada.
+import WhyVisual, { type VisualKind } from './WhyVisual.astro';
+
+interface Props { kind: VisualKind; title: string; text: string }
+const { kind, title, text } = Astro.props;
+---
+<li class="flex items-center gap-1 rounded-2xl bg-card p-2 shadow-[0_0_0_1px_var(--color-border)] sm:flex-col sm:items-stretch">
+  <div
+    class="aspect-[3/2] w-32 shrink-0 overflow-hidden rounded-xl bg-gradient-to-b from-brand-50 to-white sm:aspect-auto sm:h-44 sm:w-auto"
+    style="background-image: radial-gradient(circle at 1px 1px, rgb(15 42 109 / 0.08) 1px, transparent 0); background-size: 14px 14px;"
+  >
+    <WhyVisual kind={kind} />
+  </div>
+  <div class="min-w-0 px-3 py-2 sm:px-4 sm:pt-5 sm:pb-5">
+    <h3 class="t-h3">{title}</h3>
+    <p class="t-body mt-1 sm:mt-2">{text}</p>
+  </div>
+</li>
