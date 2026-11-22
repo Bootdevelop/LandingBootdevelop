@@ -1,0 +1,181 @@
+---
+// Servicios: tarjeta amplia (texto + imagen) con las pestañas debajo.
+// Avanza solo cada pocos segundos; se pausa al pasar el ratón y se detiene al elegir una pestaña.
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import { servicePhotos } from '../assets/photos';
+import { ui, serviceKeys, serviceIcons, type Lang } from '../i18n/ui';
+import { path } from '../i18n/routes';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = ui[lang];
+const more = { es: 'Ver servicio', en: 'View service', fr: 'Voir le service' }[lang];
+---
+<div class="hidden lg:block" data-explorer>
+  <div class="relative grid overflow-hidden rounded-2xl bg-brand-900">
+    {serviceKeys.map((k, i) => (
+      <div
+        id={`panel-${k}`}
+        role="tabpanel"
+        aria-labelledby={`tab-${k}`}
+        data-panel={k}
+        aria-hidden={i === 0 ? undefined : 'true'}
+        class="col-start-1 row-start-1 grid transition-opacity duration-500 aria-hidden:pointer-events-none aria-hidden:opacity-0 lg:grid-cols-[1fr_1.15fr]"
+      >
+        <div class="relative order-1 aspect-[16/10] lg:order-2 lg:aspect-auto lg:min-h-[460px]">
+          <Image src={servicePhotos[k]} alt="" widths={[700, 1100]} sizes="(min-width: 1024px) 640px, 100vw" loading="lazy" class="absolute inset-0 size-full object-cover" />
+          <div class="absolute inset-0 bg-gradient-to-t from-brand-900/60 to-transparent lg:bg-gradient-to-r lg:from-brand-900 lg:via-brand-900/10"></div>
+        </div>
+        <div class="order-2 flex flex-col justify-center p-7 sm:p-10 lg:order-1 lg:p-12">
+          <h3 class="t-h2 text-white">{t.services[k].title}</h3>
+          <p class="t-body mt-4 max-w-md text-white/70">{t.services[k].intro}</p>
+          <ul class="mt-7 grid gap-x-6 gap-y-2.5 text-sm text-white/90 sm:grid-cols-2">
+            {t.services[k].areas.map((x) => (
+              <li class="flex items-start gap-2"><Icon name="check" class="mt-0.5 size-4 shrink-0 text-brand-200" strokeWidth={2} />{x}</li>
+            ))}
+          </ul>
+          <a href={path(lang, { kind: 'service', key: k })} tabindex={i === 0 ? undefined : -1} class="btn btn-light mt-9 self-start">{more}</a>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <div class="-mx-4 mt-6 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
+    <div role="tablist" class="grid min-w-[880px] grid-cols-6 gap-4">
+      {serviceKeys.map((k, i) => (
+        <button
+          type="button"
+          role="tab"
+          id={`tab-${k}`}
+          aria-controls={`panel-${k}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          tabindex={i === 0 ? 0 : -1}
+          data-tab={k}
+          class="group relative pt-5 pb-4 text-left"
+        >
+          <span class="absolute inset-x-0 top-0 h-0.5 overflow-hidden rounded-full bg-border">
+            <span class="bar absolute inset-0 origin-left bg-brand-600"></span>
+          </span>
+          <span class="flex items-center gap-2 text-muted-foreground transition-colors group-hover:text-foreground group-aria-selected:text-foreground">
+            <Icon name={serviceIcons[k]} class="size-4 shrink-0 group-aria-selected:text-brand-600" />
+            <span class="text-sm font-medium">{t.services[k].title}</span>
+          </span>
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
+
+<!-- Móvil: carrusel deslizable con indicadores -->
+<div class="lg:hidden" data-carousel>
+  <div class="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" data-track>
+    {serviceKeys.map((k) => (
+      <a href={path(lang, { kind: 'service', key: k })} class="flex w-[84%] shrink-0 snap-center flex-col overflow-hidden rounded-2xl bg-brand-900 sm:w-[62%]" data-slide>
+        <div class="relative aspect-[16/10]">
+          <Image src={servicePhotos[k]} alt="" widths={[500, 800]} sizes="85vw" loading="lazy" class="absolute inset-0 size-full object-cover" />
+          <div class="absolute inset-0 bg-gradient-to-t from-brand-900/70 to-transparent"></div>
+        </div>
+        <div class="flex flex-1 flex-col p-6">
+          <h3 class="text-xl leading-snug font-medium tracking-[-0.02em] text-white">{t.services[k].title}</h3>
+          <p class="t-body mt-2 text-white/70">{t.services[k].short}</p>
+          <ul class="mt-4 space-y-1.5 text-sm text-white/85">
+            {t.services[k].areas.map((x) => (
+              <li class="flex items-start gap-2"><Icon name="check" class="mt-0.5 size-4 shrink-0 text-brand-200" strokeWidth={2} />{x}</li>
+            ))}
+          </ul>
+          <span class="mt-auto inline-flex items-center gap-1.5 pt-6 text-sm font-medium text-white">
+            {more}
+            <Icon name="arrowRight" class="size-4" />
+          </span>
+        </div>
+      </a>
+    ))}
+  </div>
+  <div class="mt-5 flex justify-center gap-2" role="group" aria-label={t.nav.services}>
+    {serviceKeys.map((k, i) => (
+      <button type="button" data-dot={i} aria-label={t.services[k].title} aria-current={i === 0 ? 'true' : undefined} class="h-1.5 w-1.5 rounded-full bg-border transition-all aria-[current]:w-6 aria-[current]:bg-brand-600"></button>
+    ))}
+  </div>
+</div>
+
+<style>
+  [data-explorer] { --cycle: 7s; }
+  .bar { transform: scaleX(0); }
+  [aria-selected='true'] .bar { transform: scaleX(1); }
+  [data-explorer].is-playing [aria-selected='true'] .bar { animation: fill var(--cycle) linear forwards; }
+  @keyframes fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  [data-explorer].is-paused [aria-selected='true'] .bar { animation-play-state: paused; }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-explorer]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-tab]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[data-panel]')];
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let current = 0;
+    let stopped = reduce;
+
+    const select = (i: number, focus = false) => {
+      current = (i + tabs.length) % tabs.length;
+      tabs.forEach((t, n) => {
+        const on = n === current;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+      });
+      panels.forEach((p, n) => {
+        const on = n === current;
+        if (on) p.removeAttribute('aria-hidden'); else p.setAttribute('aria-hidden', 'true');
+        p.querySelector('a')?.setAttribute('tabindex', on ? '0' : '-1');
+      });
+      if (focus) tabs[current].focus();
+      // Reinicia la barra de progreso de la pestaña activa
+      root.classList.remove('is-playing');
+      if (!stopped) { void root.offsetWidth; root.classList.add('is-playing'); }
+    };
+
+    const stop = () => { stopped = true; root.classList.remove('is-playing'); };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => { stop(); select(i); });
+      tab.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          stop();
+          select(current + (e.key === 'ArrowRight' ? 1 : -1), true);
+        }
+      });
+    });
+
+    // Avance automático: al terminar la barra de la pestaña activa, pasa a la siguiente
+    root.addEventListener('animationend', (e) => {
+      if (!stopped && (e.target as HTMLElement).classList.contains('bar')) select(current + 1);
+    });
+    root.addEventListener('mouseenter', () => root.classList.add('is-paused'));
+    root.addEventListener('mouseleave', () => root.classList.remove('is-paused'));
+    root.addEventListener('focusin', () => root.classList.add('is-paused'));
+    root.addEventListener('focusout', () => root.classList.remove('is-paused'));
+
+    // Solo empieza cuando la sección es visible
+    new IntersectionObserver(([e]) => {
+      if (stopped) return;
+      root.classList.toggle('is-paused', !e.isIntersecting);
+      if (e.isIntersecting && !root.classList.contains('is-playing')) select(current);
+    }, { threshold: 0.35 }).observe(root);
+  });
+  // Carrusel móvil: sincroniza los indicadores con el desplazamiento
+  document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
+    const track = root.querySelector<HTMLElement>('[data-track]')!;
+    const slides = [...root.querySelectorAll<HTMLElement>('[data-slide]')];
+    const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-dot]')];
+    const centerOf = (el: HTMLElement) => el.offsetLeft - (track.clientWidth - el.clientWidth) / 2;
+    const update = () => {
+      const x = track.scrollLeft;
+      let best = 0;
+      slides.forEach((sl, i) => { if (Math.abs(centerOf(sl) - x) < Math.abs(centerOf(slides[best]) - x)) best = i; });
+      dots.forEach((d, i) => (i === best ? d.setAttribute('aria-current', 'true') : d.removeAttribute('aria-current')));
+    };
+    track.addEventListener('scroll', () => requestAnimationFrame(update), { passive: true });
+    dots.forEach((d, i) => d.addEventListener('click', () => track.scrollTo({ left: centerOf(slides[i]), behavior: 'smooth' })));
+  });
+</script>

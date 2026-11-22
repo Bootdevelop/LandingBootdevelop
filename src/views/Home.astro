@@ -1,0 +1,68 @@
+---
+import FlowGradient from '../components/FlowGradient.astro';
+import ServicesExplorer from '../components/ServicesExplorer.astro';
+import CtaBanner from '../components/CtaBanner.astro';
+import VisualCard from '../components/VisualCard.astro';
+import { ui, type Lang } from '../i18n/ui';
+import { path } from '../i18n/routes';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = ui[lang];
+const whyKinds = ['experience', 'communication', 'quality', 'scale'] as const;
+---
+<!-- Hero -->
+<section class="px-2 pt-2 sm:px-3">
+  <div class="relative isolate flex min-h-[560px] items-end overflow-hidden rounded-2xl sm:rounded-3xl lg:h-[calc(100svh-5rem)] lg:max-h-[820px]">
+    <FlowGradient />
+    <div class="container-x relative pt-28 pb-12 sm:pb-16 lg:pb-20">
+      <p class="hero-in inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[13px] text-white/85 ring-1 ring-white/15 ring-inset backdrop-blur-md">
+        <span class="size-1.5 rounded-full bg-brand-200"></span>
+        {t.hero.badge}
+      </p>
+      <h1 class="hero-in t-display mt-6 max-w-3xl text-white" style="--i:1">{t.hero.title}</h1>
+      <div class="hero-in mt-6 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between" style="--i:2">
+        <p class="t-lead max-w-xl text-white/75">{t.hero.subtitle}</p>
+        <div class="flex shrink-0 flex-col gap-3 sm:flex-row">
+          <a href={path(lang, { kind: 'contact' })} class="btn btn-light btn-lg">{t.hero.primary}</a>
+          <a href="#servicios" class="btn btn-glass btn-lg">{t.hero.secondary}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Servicios -->
+<section id="servicios" class="section scroll-mt-16" aria-labelledby="services-title">
+  <div class="container-x">
+    <div class="mb-12 max-w-2xl">
+      <h2 id="services-title" class="t-h2">{t.home.servicesTitle}</h2>
+      <p class="t-lead mt-4">{t.home.servicesText}</p>
+    </div>
+    <ServicesExplorer lang={lang} />
+  </div>
+</section>
+
+<!-- Por qué -->
+<section class="section border-t border-border" aria-labelledby="why-title">
+  <div class="container-x">
+    <h2 id="why-title" class="t-h2">{t.home.whyTitle}</h2>
+    <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-reveal>
+      {t.why.map((w, i) => <VisualCard kind={whyKinds[i]} title={w.title} text={w.text} />)}
+    </ul>
+  </div>
+</section>
+
+<CtaBanner lang={lang} />
+
+<style>
+  /* Entrada única del hero */
+  .hero-in {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: hero-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+    animation-delay: calc(0.15s + var(--i, 0) * 0.12s);
+  }
+  @keyframes hero-in { to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .hero-in { opacity: 1; transform: none; animation: none; } }
+</style>

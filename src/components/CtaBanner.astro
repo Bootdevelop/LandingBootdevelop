@@ -1,0 +1,26 @@
+---
+import FlowGradient from './FlowGradient.astro';
+import { ui, email, type Lang } from '../i18n/ui';
+import { path } from '../i18n/routes';
+
+interface Props { lang: Lang; button?: string }
+const { lang, button } = Astro.props;
+const t = ui[lang].cta;
+---
+<section class="section">
+  <div class="container-x">
+    <div class="relative isolate overflow-hidden rounded-2xl px-6 py-14 sm:px-12 sm:py-16">
+      <FlowGradient speed={0.8} seed={7} />
+      <div class="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+        <div class="max-w-xl">
+          <h2 class="t-h2 text-white">{t.title}</h2>
+          <p class="t-lead mt-3 text-white/75">{t.text}</p>
+        </div>
+        <div class="flex shrink-0 flex-col gap-3 sm:flex-row">
+          <a href={path(lang, { kind: 'contact' })} class="btn btn-light btn-lg">{button ?? t.button}</a>
+          <a href={`mailto:${email}`} class="btn btn-glass btn-lg">{email}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,32 @@
+---
+import Base from '../../layouts/Base.astro';
+import Home from '../../views/Home.astro';
+import Service from '../../views/Service.astro';
+import About from '../../views/About.astro';
+import Contact from '../../views/Contact.astro';
+import { ui, type Lang } from '../../i18n/ui';
+import { allPages, type Page } from '../../i18n/routes';
+
+export function getStaticPaths() {
+  return allPages().map(({ lang, page, slug }) => ({ params: { lang, slug }, props: { page } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const { page } = Astro.props as { page: Page };
+const t = ui[lang];
+
+const title = {
+  home: t.meta.home,
+  service: page.kind === 'service' ? `${t.services[page.key].title} | Bootdevelop` : '',
+  about: `${t.meta.about} | Bootdevelop`,
+  contact: `${t.meta.contact} | Bootdevelop`,
+}[page.kind];
+
+const description = page.kind === 'service' ? t.services[page.key].intro : t.meta.description;
+---
+<Base lang={lang} page={page} title={title} description={description}>
+  {page.kind === 'home' && <Home lang={lang} />}
+  {page.kind === 'service' && <Service lang={lang} serviceKey={page.key} />}
+  {page.kind === 'about' && <About lang={lang} />}
+  {page.kind === 'contact' && <Contact lang={lang} />}
+</Base>
