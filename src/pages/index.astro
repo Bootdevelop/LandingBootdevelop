@@ -1,7 +1,8 @@
 ---
 // Raíz: detecta el idioma y redirige a /es/, /en/ o /fr/.
 // Prioridad: idioma elegido antes por el usuario > idiomas del navegador > inglés.
-import { languages } from '../i18n/ui';
+import { languages, ui } from '../i18n/ui';
+import SocialMeta from '../components/SocialMeta.astro';
 const codes = Object.keys(languages);
 ---
 <!doctype html>
@@ -10,6 +11,9 @@ const codes = Object.keys(languages);
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Bootdevelop</title>
+    <meta name="description" content={ui.es.meta.description} />
+    <link rel="canonical" href={Astro.site} />
+    <SocialMeta title="Bootdevelop" description={ui.es.meta.description} url={Astro.site!} />
     <link rel="icon" href="/favicon.ico" />
     {codes.map((l) => <link rel="alternate" hreflang={l} href={`https://bootdevelop.com/${l}/`} />)}
     <script is:inline define:vars={{ codes }}>
