@@ -1,0 +1,7 @@
+Asset: bootdevelop-social-v1.jpg
+Generated using the built-in image generation tool with public/brand/logo.png as reference.
+Delivery: 1200x630 sRGB JPEG, optimized with Sharp. Shared by SocialMeta.astro across all pages.
+Use a new versioned filename when replacing the image to avoid stale image caches.
+
+Final generation prompt:
+Use case: ads-marketing. Create the main Open Graph social sharing image for Bootdevelop, a premium software engineering studio. Landscape 1200x630 pixels, approximately 1.905:1. Reference image is the official Bootdevelop wordmark; reproduce it faithfully including its rounded lowercase lettering, blue gradient and power-button shape within the lettering. Design follows the actual site: disciplined minimalism, off-white #fafafa, navy #0f2a6d, blue #205286, muted cyan #4891b1 and pale blue #a2cee4. Large official wordmark centered horizontally in the upper-middle on a pristine off-white field, comfortably legible at thumbnail sizes. Bottom third and right edge feature beautiful broad flowing ribbons of soft blue light, silky abstract fluid gradients fading naturally into white, inspired by a WebGL fluid hero. Dark navy at bottom right, gentle pale blue near middle. Sophisticated and spare, generous negative space, subtle fine grain, precise composition. Keep entire logo within central safe area with ample padding, no overlap or distortion. Only text is the exact official wordmark 'bootdevelop'. No tagline, no additional text, no mockup, no borders, no stock tech icons, no purple, no neon.

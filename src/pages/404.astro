@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import SocialMeta from '../components/SocialMeta.astro';
 ---
 <!doctype html>
 <html lang="es">
@@ -9,6 +10,7 @@ import '../styles/global.css';
     <title>404 | Bootdevelop</title>
     <link rel="icon" href="/favicon.ico" />
     <meta name="robots" content="noindex" />
+    <SocialMeta title="404 | Bootdevelop" description="Página no encontrada · Page not found · Page introuvable" url={new URL('/404.html', Astro.site!)} />
   </head>
   <body class="grid min-h-dvh place-items-center px-4">
     <main class="text-center">
