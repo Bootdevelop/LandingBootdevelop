@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   site: 'https://bootdevelop.com',
+  trailingSlash: 'always',
   i18n: {
     locales: ['es', 'en', 'fr'],
     defaultLocale: 'es',

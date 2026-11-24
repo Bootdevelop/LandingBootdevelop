@@ -15,8 +15,8 @@ interface Service {
 }
 
 interface Dict {
-  meta: { home: string; description: string; services: string; about: string; contact: string };
-  nav: { home: string; services: string; allServices: string; about: string; contact: string; cta: string; menu: string; language: string };
+  meta: { home: string; description: string; services: string; about: string; contact: string; aboutTitle: string; aboutDescription: string; contactTitle: string; contactDescription: string };
+  nav: { home: string; services: string; allServices: string; about: string; contact: string; cta: string; menu: string; language: string; main: string };
   hero: { badge: string; title: string; subtitle: string; primary: string; secondary: string };
   home: {
     servicesTitle: string;
@@ -33,6 +33,7 @@ interface Dict {
   contact: { title: string; text: string; emailLabel: string; locationLabel: string; location: string; responseLabel: string; response: string; write: string; copy: string; copied: string; tipsTitle: string; tips: string[] };
   cta: { title: string; text: string; button: string };
   footer: { tagline: string; rights: string; company: string };
+  askAi: { label: string; prompt: string };
 }
 
 export const ui: Record<Lang, Dict> = {
@@ -43,8 +44,12 @@ export const ui: Record<Lang, Dict> = {
       services: 'Servicios',
       about: 'Empresa',
       contact: 'Contacto',
+      aboutTitle: 'Sobre Bootdevelop | Ingeniería de software en Barcelona',
+      aboutDescription: 'Bootdevelop es una empresa de ingeniería de software fundada en Barcelona en 2015. Un equipo técnico sénior que desarrolla, despliega y mantiene software para empresas.',
+      contactTitle: 'Contacto | Bootdevelop',
+      contactDescription: 'Cuéntanos tu proyecto de software, cloud, IA o ciberseguridad. Te responderá un ingeniero en menos de 24 horas laborables.',
     },
-    nav: { home: 'Inicio', services: 'Servicios', allServices: 'Todos los servicios', about: 'Empresa', contact: 'Contacto', cta: 'Contactar', menu: 'Menú', language: 'Idioma' },
+    nav: { home: 'Inicio', services: 'Servicios', allServices: 'Todos los servicios', about: 'Empresa', contact: 'Contacto', cta: 'Contactar', menu: 'Menú', language: 'Idioma', main: 'Principal' },
     hero: {
       badge: 'Ingeniería de software para empresas',
       title: 'Tecnología que impulsa tu negocio',
@@ -143,6 +148,7 @@ export const ui: Record<Lang, Dict> = {
     },
     cta: { title: '¿Tienes un proyecto en mente?', text: 'Cuéntanos qué necesitas y te responderemos en menos de 24 horas.', button: 'Contactar' },
     footer: { tagline: 'Desarrollo de software, cloud e inteligencia artificial para empresas.', rights: 'Todos los derechos reservados.', company: 'Empresa' },
+    askAi: { label: 'Pregunta a la IA sobre Bootdevelop', prompt: '¿Qué es Bootdevelop (https://bootdevelop.com)? Es una empresa de ingeniería de software de Barcelona que desarrolla software a medida, MVP, arquitectura de software, cloud y DevOps, soluciones de IA y ciberseguridad para empresas. Resume qué ofrece y para quién es.' },
   },
 
   en: {
@@ -152,8 +158,12 @@ export const ui: Record<Lang, Dict> = {
       services: 'Services',
       about: 'About',
       contact: 'Contact',
+      aboutTitle: 'About Bootdevelop | Software engineering in Barcelona',
+      aboutDescription: 'Bootdevelop is a software engineering company founded in Barcelona in 2015. A senior technical team that builds, ships and maintains software for businesses.',
+      contactTitle: 'Contact | Bootdevelop',
+      contactDescription: 'Tell us about your software, cloud, AI or cybersecurity project. An engineer will reply within one business day.',
     },
-    nav: { home: 'Home', services: 'Services', allServices: 'All services', about: 'About', contact: 'Contact', cta: 'Contact us', menu: 'Menu', language: 'Language' },
+    nav: { home: 'Home', services: 'Services', allServices: 'All services', about: 'About', contact: 'Contact', cta: 'Contact us', menu: 'Menu', language: 'Language', main: 'Main' },
     hero: {
       badge: 'Software engineering for businesses',
       title: 'Technology that moves your business forward',
@@ -252,6 +262,7 @@ export const ui: Record<Lang, Dict> = {
     },
     cta: { title: 'Have a project in mind?', text: 'Tell us what you need and we will reply within 24 hours.', button: 'Contact us' },
     footer: { tagline: 'Software development, cloud and artificial intelligence for businesses.', rights: 'All rights reserved.', company: 'Company' },
+    askAi: { label: 'Ask AI about Bootdevelop', prompt: 'What is Bootdevelop (https://bootdevelop.com)? It is a Barcelona-based software engineering company that builds custom software, MVPs, software architecture, cloud and DevOps, AI solutions and cybersecurity for businesses. Summarize what it offers and who it is for.' },
   },
 
   fr: {
@@ -261,8 +272,12 @@ export const ui: Record<Lang, Dict> = {
       services: 'Services',
       about: 'À propos',
       contact: 'Contact',
+      aboutTitle: 'À propos de Bootdevelop | Ingénierie logicielle à Barcelone',
+      aboutDescription: 'Bootdevelop est une société d’ingénierie logicielle fondée à Barcelone en 2015. Une équipe technique senior qui développe, déploie et maintient des logiciels pour les entreprises.',
+      contactTitle: 'Contact | Bootdevelop',
+      contactDescription: 'Parlez-nous de votre projet logiciel, cloud, IA ou cybersécurité. Un ingénieur vous répondra sous un jour ouvré.',
     },
-    nav: { home: 'Accueil', services: 'Services', allServices: 'Tous les services', about: 'À propos', contact: 'Contact', cta: 'Nous contacter', menu: 'Menu', language: 'Langue' },
+    nav: { home: 'Accueil', services: 'Services', allServices: 'Tous les services', about: 'À propos', contact: 'Contact', cta: 'Nous contacter', menu: 'Menu', language: 'Langue', main: 'Principale' },
     hero: {
       badge: 'Ingénierie logicielle pour les entreprises',
       title: 'La technologie qui fait avancer votre entreprise',
@@ -361,6 +376,7 @@ export const ui: Record<Lang, Dict> = {
     },
     cta: { title: 'Vous avez un projet ?', text: 'Expliquez-nous votre besoin, nous vous répondrons sous 24 heures.', button: 'Nous contacter' },
     footer: { tagline: 'Développement logiciel, cloud et intelligence artificielle pour les entreprises.', rights: 'Tous droits réservés.', company: 'Entreprise' },
+    askAi: { label: 'Demandez à l’IA à propos de Bootdevelop', prompt: 'Qu’est-ce que Bootdevelop (https://bootdevelop.com) ? C’est une société d’ingénierie logicielle basée à Barcelone qui développe des logiciels sur mesure, des MVP, des architectures logicielles, du cloud et DevOps, des solutions d’IA et de la cybersécurité pour les entreprises. Résume ce qu’elle propose et à qui elle s’adresse.' },
   },
 };
 

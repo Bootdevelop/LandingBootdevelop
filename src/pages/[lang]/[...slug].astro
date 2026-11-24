@@ -4,7 +4,9 @@ import Home from '../../views/Home.astro';
 import Service from '../../views/Service.astro';
 import About from '../../views/About.astro';
 import Contact from '../../views/Contact.astro';
+import Legal from '../../views/Legal.astro';
 import { ui, type Lang } from '../../i18n/ui';
+import { legal } from '../../i18n/legal';
 import { allPages, type Page } from '../../i18n/routes';
 
 export function getStaticPaths() {
@@ -15,18 +17,24 @@ const lang = Astro.params.lang as Lang;
 const { page } = Astro.props as { page: Page };
 const t = ui[lang];
 
-const title = {
-  home: t.meta.home,
-  service: page.kind === 'service' ? `${t.services[page.key].title} | Bootdevelop` : '',
-  about: `${t.meta.about} | Bootdevelop`,
-  contact: `${t.meta.contact} | Bootdevelop`,
-}[page.kind];
+const title =
+  page.kind === 'service' ? `${t.services[page.key].title} | Bootdevelop`
+  : page.kind === 'legal' ? `${legal[lang].docs[page.key].title} | Bootdevelop`
+  : page.kind === 'about' ? t.meta.aboutTitle
+  : page.kind === 'contact' ? t.meta.contactTitle
+  : t.meta.home;
 
-const description = page.kind === 'service' ? t.services[page.key].intro : t.meta.description;
+const description =
+  page.kind === 'service' ? t.services[page.key].intro
+  : page.kind === 'legal' ? legal[lang].docs[page.key].intro
+  : page.kind === 'about' ? t.meta.aboutDescription
+  : page.kind === 'contact' ? t.meta.contactDescription
+  : t.meta.description;
 ---
 <Base lang={lang} page={page} title={title} description={description}>
   {page.kind === 'home' && <Home lang={lang} />}
   {page.kind === 'service' && <Service lang={lang} serviceKey={page.key} />}
   {page.kind === 'about' && <About lang={lang} />}
   {page.kind === 'contact' && <Contact lang={lang} />}
+  {page.kind === 'legal' && <Legal lang={lang} legalKey={page.key} />}
 </Base>
