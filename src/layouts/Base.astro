@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import SocialMeta from '../components/SocialMeta.astro';
 import { langs, type Lang } from '../i18n/ui';
 import { alternates, type Page } from '../i18n/routes';
+import { buildSchema } from '../lib/schema';
 
 interface Props {
   lang: Lang;
@@ -17,7 +18,9 @@ const { lang, page, title, description } = Astro.props;
 const site = Astro.site!;
 const alt = alternates(page);
 const canonical = new URL(alt[lang], site);
-const ogLocale = { es: 'es_ES', en: 'en_US', fr: 'fr_FR' }[lang];
+const ogLocales = { es: 'es_ES', en: 'en_US', fr: 'fr_FR' } as const;
+const hreflangs = langs;
+const schema = buildSchema({ site, lang, page, title, description });
 ---
 <!doctype html>
 <html lang={lang}>
@@ -26,25 +29,25 @@ const ogLocale = { es: 'es_ES', en: 'en_US', fr: 'fr_FR' }[lang];
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
     <link rel="canonical" href={canonical} />
-    {langs.map((l) => <link rel="alternate" hreflang={l} href={new URL(alt[l], site)} />)}
+    {hreflangs.map((l) => <link rel="alternate" hreflang={l} href={new URL(alt[l], site)} />)}
     <link rel="alternate" hreflang="x-default" href={new URL('/', site)} />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#fafafa" />
 
-    <SocialMeta title={title} description={description} url={canonical} locale={ogLocale} />
+    <SocialMeta
+      title={title}
+      description={description}
+      url={canonical}
+      locale={ogLocales[lang]}
+      localeAlternates={hreflangs.filter((l) => l !== lang).map((l) => ogLocales[l])}
+    />
 
-    <script type="application/ld+json" set:html={JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'Organization',
-      name: 'Bootdevelop',
-      url: site.href,
-      logo: new URL('/brand/logo.png', site).href,
-      email: 'support@bootdevelop.com',
-      address: { '@type': 'PostalAddress', addressLocality: 'Barcelona', addressCountry: 'ES' },
-    })} />
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>
   <body class="flex min-h-dvh flex-col">
     <Header lang={lang} page={page} />

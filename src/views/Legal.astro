@@ -1,0 +1,89 @@
+---
+// Páginas legales: aviso legal, privacidad y cookies. Texto sobrio en una columna, con navegación entre ellas.
+import PageHeader from '../components/PageHeader.astro';
+import { ui, email, type Lang } from '../i18n/ui';
+import { path } from '../i18n/routes';
+import { legal, legalKeys, company, updated, type LegalKey } from '../i18n/legal';
+
+interface Props { lang: Lang; legalKey: LegalKey }
+const { lang, legalKey } = Astro.props;
+const t = ui[lang];
+const l = legal[lang];
+const doc = l.docs[legalKey];
+const current = path(lang, { kind: 'legal', key: legalKey });
+
+const fill = (s: string) =>
+  s.replaceAll('{{email}}', email)
+    .replaceAll('{{legal}}', path(lang, { kind: 'legal', key: 'legal' }))
+    .replaceAll('{{privacy}}', path(lang, { kind: 'legal', key: 'privacy' }))
+    .replaceAll('{{cookies}}', path(lang, { kind: 'legal', key: 'cookies' }));
+
+const date = new Intl.DateTimeFormat(lang, { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(updated));
+
+const identity = [
+  { label: l.idLabels.name, value: company.name },
+  { label: l.idLabels.nif, value: company.nif },
+  { label: l.idLabels.address, value: company.address },
+  { label: l.idLabels.email, value: `<a href="mailto:${email}">${email}</a>` },
+  { label: l.idLabels.registry, value: l.registry },
+];
+---
+<PageHeader
+  title={doc.title}
+  text={doc.intro}
+  crumbs={[{ href: path(lang, { kind: 'home' }), label: t.nav.home }, { href: current, label: doc.nav }]}
+/>
+
+<section class="section">
+  <div class="container-x grid gap-12 lg:grid-cols-[220px_1fr] lg:gap-16">
+    <nav aria-label={l.docs.legal.nav} class="lg:sticky lg:top-24 lg:self-start">
+      <ul class="flex flex-wrap gap-x-5 gap-y-2 text-sm lg:flex-col lg:gap-3">
+        {legalKeys.map((k) => {
+          const href = path(lang, { kind: 'legal', key: k });
+          return (
+            <li>
+              <a href={href} aria-current={href === current ? 'page' : undefined} class="transition-colors hover:text-foreground aria-[current]:font-medium aria-[current]:text-foreground">
+                {l.docs[k].nav}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+
+    <article class="legal max-w-3xl">
+      {legalKey === 'legal' && (
+        <div class="mb-12">
+          <h2 class="t-h3">{l.idTitle}</h2>
+          <dl class="mt-4 divide-y divide-border border-y border-border">
+            {identity.map((row) => (
+              <div class="grid gap-1 py-3.5 sm:grid-cols-[200px_1fr] sm:gap-6">
+                <dt class="t-small">{row.label}</dt>
+                <dd class="t-body text-foreground" set:html={row.value} />
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
+
+      <div class="space-y-10">
+        {doc.sections.map((s) => (
+          <div>
+            <h2 class="t-h3">{s.h}</h2>
+            <div class="mt-3 space-y-3">
+              {s.p.map((p) => <p class="t-body" set:html={fill(p)} />)}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <p class="t-small mt-14 border-t border-border pt-6">{l.updatedLabel}: <time datetime={updated}>{date}</time></p>
+    </article>
+  </div>
+</section>
+
+<style>
+  .legal :global(a) { color: var(--color-brand-700); text-decoration: underline; text-underline-offset: 3px; }
+  .legal :global(a:hover) { color: var(--color-brand-900); }
+  .legal :global(code) { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.9em; padding: 0.1em 0.35em; border-radius: 4px; background: var(--color-neutral-100); }
+</style>

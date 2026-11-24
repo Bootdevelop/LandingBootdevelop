@@ -17,7 +17,7 @@ const linkCls = 'rounded-md px-3 py-2 text-sm transition-colors hover:text-foreg
       <img src="/brand/logo.png" alt="Bootdevelop" width="422" height="76" class="h-[22px] w-auto sm:h-6" />
     </a>
 
-    <nav class="hidden items-center gap-1 lg:flex" aria-label="Principal">
+    <nav class="hidden items-center gap-1 lg:flex" aria-label={t.nav.main}>
       <div class="group relative">
         <button
           type="button"
@@ -85,7 +85,7 @@ const linkCls = 'rounded-md px-3 py-2 text-sm transition-colors hover:text-foreg
   </div>
 
   <div id="mobile-nav" class="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-border bg-background lg:hidden" hidden data-mobile-nav>
-    <nav class="container-x flex flex-col py-4" aria-label="Principal">
+    <nav class="container-x flex flex-col py-4" aria-label={t.nav.main}>
       <p class="py-3 text-lg font-medium text-foreground">{t.nav.services}</p>
       <ul class="mb-3 grid gap-1 border-l border-border pl-4">
         {serviceKeys.map((k) => (
